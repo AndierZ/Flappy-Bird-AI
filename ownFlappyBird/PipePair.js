@@ -83,4 +83,11 @@ class PipePair {
 		}
 		return false;
 	}
+
+	nextPipes(p) {
+		if (this.playerPassed(p)) {
+			return this.next.nextPipes();
+		}
+		return this;
+	}
 }

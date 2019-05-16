@@ -1,6 +1,7 @@
 var panSpeed = 2;
 var gravity = 0.3;
-var player;
+// var player;
+var population;
 var pipes;
 var ground;
 var gameOver = false;
@@ -16,7 +17,8 @@ function preload() {
 
 function setup() {
 	window.canvas = createCanvas(800, 400);
-	player = new Player(100, canvas.height / 2); 
+	// player = new Player(100, canvas.height / 2); 
+	population = new Population(500);
 	pipes = new PipePair();
 	pipes.setup(canvas.height / 2);
     ground = new Ground();
@@ -26,23 +28,35 @@ function draw() {
 
 	if (!gameOver) {
 		image(backgroundSprite, 0, 0, canvas.width, canvas.height);
+		// let time = millis();
 		pipes.update();
+		// print(2, millis() - time);
+		// time = millis();
 		pipes.show();
+		// print(3, millis() - time);
+		// time = millis();
 		pipes = pipes.checkOffScreen();
-		player.update();
-		player.show();
-
+		// print(4, millis() - time);
+		// time = millis();
+		population.evolve(pipes);
+		// print(5, millis() - time);
+		// time = millis();
 		ground.update();
+		// print(6, millis() - time);
+		// time = millis();
 		ground.show();
 
-		if(pipes.playerPassed(player)){
-			player.addScore();
-		}
+		gameOver = population.extinct();
 
-		gameOver = player.checkCollisions();
+		textSize(16);
+		text("ScoreStreak: " + this.population.bestScore, canvas.width/2 + 250, canvas.height/2 - 150);
+		text("Dead: " + this.population.deadBirds, canvas.width/2 + 250, canvas.height/2 - 130);
+		text("PopulationSize: " + this.population.players.length, canvas.width/2 + 250, canvas.height/2 - 110);
+		text("BestConfig: " + this.population.bestPlayer.brain.config, canvas.width/2 + 250, canvas.height/2 - 90);
+		fill(0);
 	} else {
 		textSize(32);
-		text("Score: " + this.player.score, canvas.width/2 - 50, canvas.height/2);
+		text("Score: " + this.population.bestScore, canvas.width/2 - 50, canvas.height/2);
 		fill(0, 102, 153);
 	}
 }
@@ -50,7 +64,16 @@ function draw() {
 function keyPressed() {
 	switch(key) {
 		case ' ':
-			player.flap();
+			// player.flap();
+			print('space');
+			break;
+		case 'B':
+			print('show best');
+			population.onlyShowBest(true);
+			break;
+		case 'A':
+			print('show all');
+			population.onlyShowBest(false);
 			break;
 	}
 }
